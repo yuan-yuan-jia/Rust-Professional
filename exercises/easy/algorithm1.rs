@@ -29,13 +29,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T:std::cmp::PartialOrd + Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T: std::cmp::PartialOrd + Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -71,12 +71,52 @@ impl<T> LinkedList<T> {
     }
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
 	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+		
+		// Self {
+        //     length: 0,
+        //     start: None,
+        //     end: None,
+        // };
+        let mut linked_list = LinkedList::new();
+        let mut a = list_a.start;
+        let mut b  = list_b.start;
+        
+        while a.is_some() && b.is_some() {
+            let a_x = unsafe {
+                Box::leak(Box::from_raw(a.as_ref().unwrap().as_ptr()))
+            };
+            let b_x = unsafe {
+                Box::leak(Box::from_raw(b.as_ref().unwrap().as_ptr()))
+            };
+            if a_x.val >= b_x.val {
+                // 使用b的值
+                linked_list.add(b_x.val.clone());
+                b = b_x.next;
+            }else {
+                // 使用a的值
+                linked_list.add(a_x.val.clone());
+                a = a_x.next;
+            }
+
         }
+
+        while a.is_some() {
+            let a_x = unsafe {
+                Box::from_raw(a.as_ref().unwrap().as_ptr())
+            };
+            linked_list.add(a_x.val);
+            a = a_x.next;
+        }
+
+        while b.is_some() {
+            let b_x = unsafe {
+                Box::from_raw(b.as_ref().unwrap().as_ptr())
+            };
+            linked_list.add(b_x.val);
+            b = b_x.next;
+        }
+
+        linked_list
 	}
 }
 
@@ -171,3 +211,7 @@ mod tests {
 		}
 	}
 }
+
+// fn main() {
+
+// }

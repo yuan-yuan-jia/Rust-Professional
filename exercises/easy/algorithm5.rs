@@ -31,6 +31,31 @@ impl Graph {
 		//TODO
 
         let mut visit_order = vec![];
+        let mut s = start;
+        let mut fist = true;
+        while s < self.adj.len() {
+            if s == start && !fist {
+                break;
+            }
+            if s == start && fist {
+                fist = false;
+            }
+
+            let i = s;
+            
+            if !visit_order.contains(&i) {
+                visit_order.push(i);
+            }
+            let dest_v = self.adj.get(i).unwrap();
+            for j in dest_v {
+                if !visit_order.contains(&j) {
+                    visit_order.push(*j);
+                }   
+            }
+
+            // 下一个节点
+            s = (s + 1) % self.adj.len();
+        }
         visit_order
     }
 }

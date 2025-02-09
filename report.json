@@ -22,8 +22,8 @@
     },
     {
       "name": "algorithm5.rs",
-      "result": false,
-      "score": 0
+      "result": true,
+      "score": 1
     },
     {
       "name": "algorithm6.rs",
@@ -153,9 +153,9 @@
   ],
   "statistics": {
     "total_exercises": 30,
-    "total_successes": 8,
-    "total_failures": 22,
-    "total_score": 28,
+    "total_successes": 9,
+    "total_failures": 21,
+    "total_score": 29,
     "total_time": 9
   }
 }

@@ -51,12 +51,52 @@ where
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
+        if self.root.is_none() {
+            self.root = Some(Box::new(TreeNode::new(value)));
+        }else {
+            let mut pre = self.root.as_mut();
+            while let Some(p) = pre {
+                if value == p.value {
+                    // 相等什么都不做
+                    break; 
+                }else if value > p.value {
+                    // 新节点在当前节点的右子树中
+                    if p.right.is_some() {
+                        pre = p.right.as_mut();
+                    }else {
+                        p.right = Some(Box::new(TreeNode::new(value)));
+                        break;
+                    }
+                }else {
+                    // 新节点在当前节点的左子树中
+                    if p.left.is_some() {
+                        pre = p.left.as_mut();
+                    }else {
+                        p.left = Some(Box::new(TreeNode::new(value)));
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
         //TODO
-        true
+        let mut curr = self.root.as_ref();
+        while let Some(c) = curr {
+            if c.value == value {
+                return true;
+            }
+            if value > c.value {
+                // 在右子树
+                curr = c.right.as_ref();
+            }else {
+                // 在左子树 
+                curr = c.left.as_ref();
+            }
+        }
+        false
     }
 }
 

@@ -55,7 +55,7 @@ impl<T> LinkedList<T> {
             None => self.start = node_ptr,
             Some(end_ptr) => unsafe { (*end_ptr.as_ptr()).next = node_ptr },
         }
-        self.end = node_ptr;
+        self.end = node_ptr       ;
         self.length += 1;
     }
 
@@ -74,6 +74,29 @@ impl<T> LinkedList<T> {
     }
 	pub fn reverse(&mut self){
 		// TODO
+        let mut item = self.start.as_ref();         
+        while let Some(item_t) = item {
+         // 直接引用当前节点的next
+         // 在后面的操作中，会改变next的值，导致引用的节点不对  
+        
+        //    let t  = unsafe {
+        //         (*item_t.as_ref()).next.as_ref()
+        //    };
+           unsafe {
+                let temp = (*item_t.as_ptr()).prev;
+                (*item_t.as_ptr()).prev = (*item_t.as_ptr()).next;
+                (*item_t.as_ptr()).next = temp;
+                
+                // 应该拿交换后的节点的pre指针的值
+                item = (*item_t.as_ptr()).prev.as_ref();
+           };
+           
+           
+        }
+        // 交换start和end
+        let temp = self.start;
+        self.start = self.end;
+        self.end = temp;
 	}
 }
 

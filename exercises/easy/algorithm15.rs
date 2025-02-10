@@ -11,9 +11,45 @@
 
 use std::fmt::{self, Display, Formatter};
 
+
+fn have_repeating_c(c: &[i32]) -> bool {
+    for i in c {
+        if *i > 1 {
+            return true;
+        }
+    }
+    false
+}
+
 pub fn longest_substring_without_repeating_chars(s: String) -> i32 {
-    // TODO: Implement the logic to find the longest substring without repeating characters
-    0 // Placeholder return value
+    // : Implement the logic to find the longest substring without repeating characters
+    let mut r = 0; // Placeholder return value
+    let mut i = 0;
+    let mut j = 0;
+    let bytes = s.as_bytes();
+    let len = bytes.len();
+    let mut container = [0;26];
+    while j < len {
+        let c = *bytes.get(j).unwrap() as i32 - 'a' as i32;
+        let c1 = container.get_mut(c as usize);
+        match c1 {
+            Some(aa) => {*aa = *aa + 1},
+            None => panic!("should be unreachable"),
+        }
+        while i < j && have_repeating_c(&container) {
+            let c = *bytes.get(i).unwrap() as i32 - 'a' as i32;
+
+            let c1 = container.get_mut(c as usize);
+            match c1 {
+                Some(aa) => {*aa = *aa - 1},
+                None => panic!("should be unreachable"),
+            }
+            i += 1;
+        }
+        r = r.max(j - i + 1);
+        j += 1;
+    }
+    r as i32
 }
 
 #[cfg(test)]

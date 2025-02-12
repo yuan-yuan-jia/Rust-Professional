@@ -37,7 +37,32 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        // 直接作为数组的最后一个元素加入
+        let last_idx = self.count;
+        let last_mut_item = self.items.get_mut(last_idx);
+        match last_mut_item {
+            Some(e) => {
+                *e = value;
+            },
+            None => {
+              self.items.push(value);  
+            },
+        };
+        self.count += 1;
+        // 堆化
+        let mut idx = last_idx;
+        while idx != 0 {
+            
+            let parent_idx = self.parent_idx(idx);
+            
+            if (self.comparator)(self.items.get(parent_idx).unwrap() , self.items.get(idx).unwrap()) {
+                // 满足堆的定义
+                break;
+            }
+            // 交换
+            self.items.swap(idx, parent_idx);
+            idx = parent_idx;
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +82,46 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        //
+        let left_idx = self.left_child_idx(idx);
+        let right_idx = self.right_child_idx(idx);
+        if left_idx >= self.count && right_idx >= self.count {
+            return idx;
+        }else if left_idx >= self.count {
+            let child = self.items.get(right_idx).unwrap();
+            let val = self.items.get(idx).unwrap();
+            if (self.comparator)(child, val) {
+                return right_idx;
+            }else {
+                return idx;
+            }
+        }else if right_idx >= self.count {
+            let child = self.items.get(left_idx).unwrap();
+            let val = self.items.get(idx).unwrap();
+            if (self.comparator)(child, val) {
+                return left_idx;
+            }else {
+                return idx;
+            }
+        }else {
+            let left_child = self.items.get(left_idx).unwrap();
+            let right_child = self.items.get(right_idx).unwrap();
+            let val = self.items.get(idx).unwrap();
+
+            if (self.comparator)(left_child,right_child) {
+                if (self.comparator)(left_child, val) {
+                    return left_idx;
+                }else {
+                    return idx;
+                }
+            }else {
+                if (self.comparator)(right_child, val) {
+                    return right_idx;
+                }else {
+                    return idx;
+                }
+            }         
+        }
     }
 }
 
@@ -84,8 +147,30 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        //
+        if self.is_empty() {
+		    return None;
+        }
+        // 将堆顶元素和第一个元素进行交换
+        self.items.swap(0, self.count - 1);
+        // 拿出最后一个元素
+        let res = self.items.pop();
+        self.count -= 1;
+        // 将堆顶的元素进行从上到下的堆化
+        {    
+            let mut idx = 0;
+            while idx < self.count {
+                let child_idx = self.smallest_child_idx(idx);
+                if idx == child_idx {
+                    break;
+                }else {
+                    // 交换元素
+                    self.items.swap(idx, child_idx);
+                    idx = child_idx;
+                }
+            }
+        }    
+        res
     }
 }
 

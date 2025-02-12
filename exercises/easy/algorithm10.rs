@@ -30,6 +30,52 @@ impl Graph for UndirectedGraph {
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
         //TODO
+        let node1 = edge.0;
+        let node2  = edge.1;
+        // 先判断这两个节点是否存在
+        // 不存在添加节点
+        self.add_node(node1);
+        self.add_node(node2);
+
+        { 
+            let edges_1  = self.adjacency_table.get_mut(node1).unwrap();
+            let mut find = false;
+            for item in edges_1.iter_mut() {
+                if item.0 == node2 {
+                    find = true;
+                    item.1 = edge.2;
+                    break;
+                }
+            }
+            if !find {
+                edges_1.push((node2.to_string(), edge.2));
+            }       
+        }
+        
+        { 
+            let edges_2  = self.adjacency_table.get_mut(node2).unwrap();
+            let mut find = false;
+            for item in edges_2.iter_mut() {
+                if item.0 == node2 {
+                    find = true;
+                    item.1 = edge.2;
+                    break;
+                }
+            }
+            if !find {
+                edges_2.push((node1.to_string(), edge.2));
+            }       
+        }
+
+    
+
+    }
+    fn add_node(&mut self, node: &str) -> bool {
+        //
+        if !self.adjacency_table.contains_key(node) {
+            self.adjacency_table.insert(node.to_string(), vec![]);
+        }
+        true          
     }
 }
 pub trait Graph {
@@ -37,12 +83,10 @@ pub trait Graph {
     fn adjacency_table_mutable(&mut self) -> &mut HashMap<String, Vec<(String, i32)>>;
     fn adjacency_table(&self) -> &HashMap<String, Vec<(String, i32)>>;
     fn add_node(&mut self, node: &str) -> bool {
-        //TODO
+        //
 		true
     }
-    fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
-    }
+    fn add_edge(&mut self, edge: (&str, &str, i32));
     fn contains(&self, node: &str) -> bool {
         self.adjacency_table().get(node).is_some()
     }
